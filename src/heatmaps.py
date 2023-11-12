@@ -10,7 +10,7 @@ df = pd.read_csv("./data/Results.csv")
 
 df.replace({"Yes": 1, "No": 0})
 df = df.replace(np.nan, "")
-df.Center = df.Center.str.replace(r"[\w\s,]*\((.*)\)",r"\1")
+df.Center = df.Center.str.replace(r"[\w\s,]*\((.*)\)",r"\1", regex=True)
 df.drop(df[(df["GoStage1"] == "")&(df["GoStage2"] == "")&(df["GoStage3"] == "")].index, inplace=True)
 
 changes = {
