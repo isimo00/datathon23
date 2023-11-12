@@ -63,6 +63,28 @@ df["GoStageAccum"] = df["GoStage"].replace(changes_back2)
 df["GoStage"] = df["GoStage"].replace(changes_back)
 df = df.drop(["GoStage1", "GoStage2", "GoStage3"], axis=1)
 
+changes_center = {
+    "FIB" : "Nord",
+    "ETSETB" : "Nord",
+    "ETSECCPB" : "Nord",
+    "ETSEIB" : "Sud",
+    "ETSAB" : "Sud",
+    "ETSAV" : "Sant Cugat",
+    "FME" : "Sud",
+    "EPSEB" : "Sud",
+    "EPSEVG" : "Vilanova",
+    "FNB" : "Nàutica",
+    "EEBE" : "Besòs",
+    "EETAC" : "Castelldefels",
+    "EEABB" : "Castelldefels",
+    "ESEIAAT" : "Terrassa",
+    "FOOT" : "Terrassa",
+    "EPSEM" : "Manresa"
+}
+
+df["Campus"] = df["Center"].replace( changes_center)
+
+
 initial_axis = "Center"
 fixed_axis = "GoStage"
 possible_axis = [
@@ -70,22 +92,25 @@ possible_axis = [
     "Center",
     "Year",
     "Days",
-    "ZipCode"
+    "ZipCode",
+    "Campus"
 ]
 
 # Create a function to update the heatmap based on the selected axis
 def update_heatmap(selected_axis):
     pivot_df = df.pivot_table(index=fixed_axis, columns=selected_axis, aggfunc='count', fill_value=0)["Answer"]
+    normalized = pivot_df.to_numpy() / pivot_df.to_numpy().max(axis=0)
     heatmap = go.Heatmap(
                 x=pivot_df.columns,
                 y=pivot_df.index,
-                z=pivot_df.to_numpy(),
-                colorscale='Viridis'
+                z=normalized,
+                colorscale=['white','#599191']
               )
     return heatmap
 def get_matrix(selected_axis):
     pivot_df = df.pivot_table(index=fixed_axis, columns=selected_axis, aggfunc='count', fill_value=0)["Answer"]
-    return pivot_df.to_numpy()
+    pivot_df = pivot_df.to_numpy() / pivot_df.to_numpy().max(axis=0)
+    return pivot_df
 
 fig = go.Figure()
 print(df[initial_axis].unique())
